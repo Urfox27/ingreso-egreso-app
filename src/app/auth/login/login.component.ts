@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -28,13 +29,28 @@ export class LoginComponent implements OnInit {
 
     if( this.loginForm.invalid ) { return; }
 
+    // SweetAlert
+    Swal.fire({
+      title: 'Espere por favor!',
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    });
+
     const { email, password } = this.loginForm.value;
     this.authService.loginUser( email, password )
       .then( credenciales => {
-        console.log(credenciales);
+        Swal.close();
         this.router.navigate(['/']);
       })
-      .catch( error => console.error(error) );
+      .catch( error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Correo y/o contraseña incorrecto!'
+        })
+      });
   }
 
 }
