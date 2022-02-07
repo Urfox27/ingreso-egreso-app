@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ingreso-egreso-app-dccb0": {
+      "hosting": {
+        "ingresoEgresoApp": [
+          "ingreso-egreso-app-dccb0"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ingreso-egreso-app-dccb0"
+  }
+}
