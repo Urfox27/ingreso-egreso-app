@@ -7,6 +7,8 @@ import { IngresoEgreso } from '../models/ingreso-egreso.model';
 import * as ui from '../shared/ui.actions';
 import { AuthService } from './auth.service';
 
+import { map } from 'rxjs/operators';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,7 +18,7 @@ export class IngresoEgresoService {
                private authService: AuthService,
                private store: Store<AppState> ) { }
 
-  crearIngresoEgreso( ingresoEgreso: IngresoEgreso ) {
+  crearIngresoEgreso( ingresoEgreso: IngresoEgreso) {
     this.store.dispatch(ui.isLoading());
     this.firestore.doc(`${this.authService.user.user_id}/ingreso-egresos`).collection('items')
         .add({ ...ingresoEgreso })
@@ -29,4 +31,26 @@ export class IngresoEgresoService {
           this.store.dispatch(ui.stopLoading());
         });
   }
+
+  initIngresosEgresosListener( uid: string ) {
+    return this.firestore.collection(`${uid}/ingreso-egresos/items`)
+      .snapshotChanges()
+      .pipe(
+        map( snapshot => snapshot.map( doc => ({
+              uid: doc.payload.doc.id,
+              //Traer la data
+              ...doc.payload.doc.data() as any
+            })
+          )
+        )
+      );
+  }
+
+  borrarIngresoEgreso( uidItem: string ) {
+
+    const uid = this.authService.user.user_id;
+    return this.firestore.doc(`${ uid }/ingreso-egresos/items/${ uidItem }`).delete();
+
+  }
+
 }
